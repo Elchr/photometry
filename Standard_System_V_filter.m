@@ -1,7 +1,7 @@
 clc; clear;
 
-data=xlsread('observations.xlsx');        %Εισαγωγή πίνακα δεδομένων 
-VarName1=data(:,1);                       %Δημιουργία column vectors από τα δεδομένα
+data=xlsread('observations.xlsx');        %Insert data matrix 
+VarName1=data(:,1);                       %Create column vectors from data
 V=data(:,2);
 B_V=data(:,3);
 v=data(:,4);
@@ -10,59 +10,59 @@ X=data(:,6);
 [Names,text]=xlsread('starnames.xlsx');
 
 
-%ΑΝΑΓΩΓΗ ΦΩΤΟΗΛΕΚΤΡΙΚΩΝ ΔΕΔΟΜΕΝΩΝ ΓΙΑ ΦΩΤΟΜΕΤΡΙΑ ΤΟΥ "ΟΛΟΥ ΟΥΡΑΝΟΥ"
+%PHOTO ELECTRICAL DATA PROCESSING FOR "WHOLE SKY" PHOTOMETRY
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 format long
-%Διόρθωση για την ατμοσφαιρική εξασθένιση α τάξης
+%Correction for Class A Atmospheric Deterioration
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-scatter(X,V_v);                            %Γραφική παράσταση σημείων, x-άξονας: Χ y-άξονας: V-v
-xlabel('Air mass X');                      %Όνομα άξονα x
-ylabel('V - v');                           %Όνομα άξονα y
-title('Aτμοσφαιρική εξασθένιση');          %Τίτλος διαγράμματος
-hl = lsline;                               %Εφαρμογή ευθείας ελαχίστων τετραγώνων
+scatter(X,V_v);                            %Graph, x-axis: Ξ§ y-axis: V-v
+xlabel('Air mass X');                      
+ylabel('V - v');                          
+title('AΟ„ΞΌΞΏΟƒΟ†Ξ±ΞΉΟΞΉΞΊΞ® ΞµΞΎΞ±ΟƒΞΈΞ­Ξ½ΞΉΟƒΞ·');          
+hl = lsline;                               %Least Square Line
 B = [ones(size(hl.XData(:))), hl.XData(:)]\hl.YData(:);
-Slope = B(2);                              %Κλίση ευθείας-συντελεστής εξασθένισης α' τάξης
-Intercept = B(1);                          %Σημείο τομής με άξονα y
-k=abs(Slope);                              %Βρίσκουμε την απόλυτη τιμή του συντελεστή εξασθένισης k
-v0=v-k.*X;                                 %Yπολογισμός των διορθωμένων μεγεθών για κάθε αστέρα
-fprintf('H κλίση της ευθείας (V-v)=kX+ b δηλαδή ο συντελεστής εξασθένισης k είναι %f.',k)
+Slope = B(2);                              %Slope
+Intercept = B(1);                          %Intercept
+k=abs(Slope);                              
+v0=v-k.*X;                                 %Corrected magnitude
+fprintf('H ΞΊΞ»Ξ―ΟƒΞ· Ο„Ξ·Ο‚ ΞµΟ…ΞΈΞµΞ―Ξ±Ο‚ (V-v)=kX+ b Ξ΄Ξ·Ξ»Ξ±Ξ΄Ξ® ΞΏ ΟƒΟ…Ξ½Ο„ΞµΞ»ΞµΟƒΟ„Ξ®Ο‚ ΞµΞΎΞ±ΟƒΞΈΞ­Ξ½ΞΉΟƒΞ·Ο‚ k ΞµΞ―Ξ½Ξ±ΞΉ %f.',k)
 
-Dv=V-v0;                                   %Yπολογσιμός της διαφοράς V-v0
-Pinakas_2=[VarName1,V,v0,Dv,B_V];          %Φτιάχνουμε πίνακα με τα νέα δεδομένα
+Dv=V-v0;                                   %V-v0
+Pinakas_2=[VarName1,V,v0,Dv,B_V];          %New data matrix
 
 
-%Διόρθωση για τo πρότυπο σύστημα
+%Correction for the standard system
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 figure(2)
-scatter(B_V,Dv);                            %Γραφική παράσταση σημείων, x-άξονας: B-V y-άξονας: V-v0
-xlabel('B-V');                              %Όνομα άξονα x
-ylabel('V-v0');                             %Όνομα άξονα y
-title('Μετατροπή στο πρότυπο σύστημα');     %Τίτλος διαγράμματος
-h2 = lsline;                                %Εφαρμογή ευθείας ελαχίστων τετραγώνων
+scatter(B_V,Dv);                            
+xlabel('B-V');                              
+ylabel('V-v0');                             
+title('ΞΞµΟ„Ξ±Ο„ΟΞΏΟ€Ξ® ΟƒΟ„ΞΏ Ο€ΟΟΟ„Ο…Ο€ΞΏ ΟƒΟΟƒΟ„Ξ·ΞΌΞ±');     
+h2 = lsline;                                
 C = [ones(size(h2.XData(:))), h2.XData(:)]\h2.YData(:);
-Slope_2 = C(2);                             %Κλίση ευθείας-συντελεστής 
-Intercept_2 = C(1);                         %Σημείο τομής με άξονα y
-fprintf('\n H κλίση της ευθείας (V-v0)=ε(B-V)+ζ δηλαδή ο συντελεστής ε είναι %f.',Slope_2);
-fprintf('\n H σταθερά της ευθείας (V-v0)=ε(B-V)+ζ δηλαδή η σταθερά μηδενικού σημείου ζ είναι %f. \n \n',Intercept_2)
+Slope_2 = C(2);                             
+Intercept_2 = C(1);                        
+fprintf('\n H ΞΊΞ»Ξ―ΟƒΞ· Ο„Ξ·Ο‚ ΞµΟ…ΞΈΞµΞ―Ξ±Ο‚ (V-v0)=Ξµ(B-V)+Ξ¶ Ξ΄Ξ·Ξ»Ξ±Ξ΄Ξ® ΞΏ ΟƒΟ…Ξ½Ο„ΞµΞ»ΞµΟƒΟ„Ξ®Ο‚ Ξµ ΞµΞ―Ξ½Ξ±ΞΉ %f.',Slope_2);
+fprintf('\n H ΟƒΟ„Ξ±ΞΈΞµΟΞ¬ Ο„Ξ·Ο‚ ΞµΟ…ΞΈΞµΞ―Ξ±Ο‚ (V-v0)=Ξµ(B-V)+Ξ¶ Ξ΄Ξ·Ξ»Ξ±Ξ΄Ξ® Ξ· ΟƒΟ„Ξ±ΞΈΞµΟΞ¬ ΞΌΞ·Ξ΄ΞµΞ½ΞΉΞΊΞΏΟ ΟƒΞ·ΞΌΞµΞ―ΞΏΟ… Ξ¶ ΞµΞ―Ξ½Ξ±ΞΉ %f. \n \n',Intercept_2)
 
 format short
 
-V_c=v0+Slope_2*B_V+Intercept_2;             %Υπολογισμός μεγέθους V στοπρότυπο σύστημα για κάθε αστέρα
-Pinakas_3=[VarName1,V,v,v0,V_c,V-V_c,(V-V_c)./V];      %Δημιουργία πίνακα με τα διορθωμένα μεγέθη για σύγκριση
-disp('Τελικός πίνακας');                    %Εμφάνιση πίνακα
+V_c=v0+Slope_2*B_V+Intercept_2;             %V standard system
+Pinakas_3=[VarName1,V,v,v0,V_c,V-V_c,(V-V_c)./V];      
+disp('Ξ¤ΞµΞ»ΞΉΞΊΟΟ‚ Ο€Ξ―Ξ½Ξ±ΞΊΞ±Ο‚');                   
 disp('    star         V        v         v0       V_c      V-V_c     V-V_c/V');
 disp(Pinakas_3);
 
-diff=abs(V-V_c);         %Απόλυτη τιμή διαφοράς V-V_c
+diff=abs(V-V_c);         
 figure(3)
-histogram(diff)          %Ιστόγραμμα διαφοράς V-V_c  
-xlabel('|V-V_c|');                              %Όνομα άξονα x
-ylabel('N');                                  %Όνομα άξονα y
-title('Διαφορά μεγεθών');       %Τίτλος διαγράμματος
+histogram(diff)          
+xlabel('|V-V_c|');                             
+ylabel('N');                                 
+title('Ξ”ΞΉΞ±Ο†ΞΏΟΞ¬ ΞΌΞµΞ³ΞµΞΈΟΞ½');      
 
 
-data1=xlsread('unknown.xlsx');        %Εισαγωγή πίνακα δεδομένων αγνώστων αστέρων(Β-V, v, X)
-B_V_un=data1(:,1);                       %Δημιουργία column vectors από τα δεδομένα
+data1=xlsread('unknown.xlsx');        
+B_V_un=data1(:,1);                      
 v_un=data1(:,2);
 X_un=data1(:,3);
 
@@ -71,8 +71,8 @@ v0_un=v_un-k.*X_un;
 Vc_un=v0_un+Slope_2*B_V_un+Intercept_2;
 V_un=[2.87;3.87];
 names=[19; 21];
-Pinakas_4=[names,V_un,v_un,v0_un,Vc_un,V_un-Vc_un,(V_un-Vc_un)./V_un];      %Δημιουργία πίνακα με τα διορθωμένα μεγέθη για σύγκριση
-disp('Aποτελέσματα αγνώστων αστέρων');                    %Εμφάνιση πίνακα
+Pinakas_4=[names,V_un,v_un,v0_un,Vc_un,V_un-Vc_un,(V_un-Vc_un)./V_un];     
+disp('AΟ€ΞΏΟ„ΞµΞ»Ξ­ΟƒΞΌΞ±Ο„Ξ± Ξ±Ξ³Ξ½ΟΟƒΟ„Ο‰Ξ½ Ξ±ΟƒΟ„Ξ­ΟΟ‰Ξ½');                
 disp('     star        V        v         v0        V_c     V-V_c    V-V_c/V');
 disp(Pinakas_4);
 
@@ -80,11 +80,11 @@ format short
 
 Vcc_un=v0_un+Intercept_2;
 Pinakas_5=[names,V_un,Vc_un,Vcc_un,V_un-Vc_un,V_un-Vcc_un,(V_un-Vc_un)./V_un,(V_un-Vcc_un)./V_un ];
-disp('Σύγκριση σχέσεων');                    %Εμφάνιση πίνακα
+disp('Ξ£ΟΞ³ΞΊΟΞΉΟƒΞ· ΟƒΟ‡Ξ­ΟƒΞµΟ‰Ξ½');                   
 disp('     star      V         V_c       V_c2     V-V_c     V-V_c2    V-V_c/V  V-V_c2/V');
 disp(Pinakas_5); 
 
-%Εξαγωγή πινάκων σε αρχεία excel
+%Output as .xls file
 Name={'Name','a/a', 'V','v','v0','V_c','V-V_c','V-V_c/V'};  
 warning( 'off', 'MATLAB:xlswrite:AddSheet' ) ;
 xlswrite('myfile1.xls', Name, 'Sheet 1', 'A1');
@@ -93,7 +93,7 @@ xlswrite('myfile1.xls', text, 'Sheet 1', 'A2');
 xlswrite('myfile2.xls', Name(2:8), 'Sheet 1', 'A1');
 xlswrite('myfile2.xls', Pinakas_4, 'Sheet 1', 'A2');
 
-%Eξαγωγή πινάκων σε αρχείο .txt
+%Output as .txt file
 AA=Pinakas_3(:,1);
 starnames=text;
 V=Pinakas_3(:,2);
